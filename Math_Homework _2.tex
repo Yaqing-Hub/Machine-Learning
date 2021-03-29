@@ -1,0 +1,248 @@
+\documentclass[a4 paper]{article}
+\usepackage[inner=2.0cm,outer=2.0cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{amsgen,amsmath,amstext,amsbsy,amsopn,tikz,amssymb}
+\usepackage{booktabs}
+\usepackage{framed}
+
+% Symbols
+\renewcommand{\epsilon}{\varepsilon}
+\newcommand{\T}{\top}
+
+% Linear algebra
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\norm}[2][]{\lVert #2 \rVert _{#1}}
+
+% Operator
+\renewcommand{\ge}{\geqslant}
+\renewcommand{\le}{\leqslant}
+\newcommand{\vecdot}{\cdot}
+
+\newcommand{\homework}[6]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf Machine Learning \hfill {\small (#2)}} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\Large \hfill #1  \hfill} }
+       \vspace{6mm}
+       \hbox to 6.28in { {\it Instructor: {\rm #3} \hfill Name: {\rm #5}, ID: {\rm #6}} }
+       %\hbox to 6.28in { {\it TA: #4  \hfill #6}}
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{#5 -- #1}{#5 -- #1}
+   \vspace*{4mm}
+}
+
+\newcounter{problem}[section]
+\newcommand{\problem}[1]{~\newline\fbox{\textbf{Problem \refstepcounter{problem}\theproblem: #1}}\newline\newline}
+\newcounter{subproblem}[problem]
+\newcommand{\subproblem}{~\newline\textbf{(\refstepcounter{subproblem}\thesubproblem)}~}
+\newenvironment{solution}{\newpage\setcounter{problem}{0}\begin{framed}\section*{Answer:}}{\vspace{15pt}\end{framed}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Please add your name and student ID to the {} below
+
+\newcommand{\studentname}{Yaqing Cai}
+\newcommand{\studentID}{58119104}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\homework{Assignment \#2   (Linear Model)}{Due: 27th March}{Beilun Wang}{}{\studentname}{\studentID}
+
+\section*{Problem Description:}
+
+\problem{Linear Regression}
+ Give data set $\vec X=(\vec x^{(1)},\vec x^{(2)},\cdots,\vec x^{(n)})^\T$ and $\vec y=(y^{(1)},y^{(2)},\cdots, y^{(n)})^\T$ where $(\vec x^{(i)\T},y^{(i)}) = (x_1^{(i)},x_2^{(i)},\cdots,x_p^{(i)},y^{(i)})$ is the $i$-th observation. We focus on the model $y=\vec\theta^\T\vec x+\epsilon$.
+
+\subproblem Assuming $\epsilon\sim\mathcal N(0,\sigma^2)$, write down the log-likelihood function of $\vec y$. You can ignore any unnecessary constants.
+
+\subproblem Based on your answer to (1), show that finding Maximum Likelihood Estimate of $\vec\theta$ is equivalent to solving $\mathrm{argmin}_{\vec\theta}\; \norm{\vec y-\vec X\vec\theta}^2$.
+
+\subproblem Prove that $\vec X^\T\vec X+\lambda \vec I$ with $\lambda>0$ is Positive Definite(Hint: definition).
+
+\subproblem Show that $\vec\theta^* = (\vec X^\T\vec X+\lambda\vec I)^{-1}\vec X^\T\vec y$ is the solution to $\mathrm{argmin}_{\vec\theta}\; \norm{\vec y-\vec X\vec\theta}^2+\lambda\norm{\vec\theta}^2$.
+
+\subproblem Assuming $\epsilon\sim\mathcal N(0,\sigma^2)$ and $\theta_i\sim\mathcal N(0,\tau^2)$ for $i=1,2,\cdots,p$ in $\vec\theta$($\vec\theta$ does not vary in each sample), write down the estimate of $\vec\theta$ by maximizing the conditional distribution $f(\vec\theta\,|\,\vec y)$(Hint: Bayes' formula). You can ignore any unnecessary constants. Also find out the relationship between your estimate and the solution in (4).
+
+\vspace{20pt}
+
+\problem{Gradient Descent}
+Continuously differentiable function $f:\,\mathbb R\mapsto\mathbb R$ is called \textbf{$\beta$-smooth} when its derivative $f'$ is \textbf{$\beta$-Lipschitz}, which for $\beta>0$ implies that
+\[
+    |f'(x)-f'(y)|\le \beta|x-y|.
+\]
+Now suppose $f$ is \textbf{$\beta$-smooth} and \textbf{convex} as a loss function in a gradient descent problem.
+
+\subproblem Prove that\[f(y)-f(x)\le f'(x)(y-x)+\frac\beta2(y-x)^2.\](Hint: Newton-Leibniz formula.)
+
+\subproblem Give $x_{k+1}=x_k-\eta f'(x_k)$ as one step of GD. Prove that\[f(x_{k+1})\le f(x_k)-\eta(1-\frac{\eta\beta}2)(f'(x_k))^2.\]
+
+\subproblem Based on (2), let $\eta=1/\beta$ and assume the unique global minimum point $x^*$ of $f$ exists. Prove that \[\lim_{k\to\infty}f'(x_k)=0,\; \lim_{k\to\infty}x_k=x^*.\](Hint: show that for $K\in\mathbb N_+$, $\sum_{k=1}^K (f'(x_k))^2\le 2\beta(f(x_1)-f(x_{K+1}))$.)
+
+\subproblem Recall one of the properties of convex function: $f(y)\ge f(x)+f'(x)(y-x)$. Prove that\[f(y)-f(x)\ge f'(x)(y-x)+\frac1{2\beta}(f'(y)-f'(x))^2.\]
+(Hint: let $z=y-\frac1\beta(f'(y)-f'(x))$.)
+
+\vspace{20pt}
+
+\problem{Kernel functions}
+Kernel function $k:\,\mathbb R^p\times\mathbb R^p\mapsto\mathbb R$ is called \textbf{Positive Semi-Definite}(\textbf{PSD}) when its Gramian matrix $K$ is PSD, where $K_{ij}=k(\vec u_i,\vec u_j)$ for any group of vectors $\vec u_1,\vec u_2,\cdots,\vec u_n\in\mathbb R^p$. Let $k_1$ and $k_2$ be two PSD kernels.
+
+\subproblem Give a function $f:\,\mathbb R^p\mapsto\mathbb R$. Show that the kernel $k$ defined by $k(\vec u,\vec v)=f(\vec u)f(\vec v)$ is PSD.
+
+\subproblem Show that the kernel $k$ defined by $k(\vec u,\vec v)=k_1(\vec u,\vec v)k_2(\vec u,\vec v)$ is PSD. (Hint: consider about the Hadamard product and eigendecomposition.)
+
+\subproblem Give $P$ as a polynomial with non-negative coefficients(e.g., $P(x)=\sum_i a_ix^i$ with $a_i\ge0$). Show that the kernel $k$ defined by $k(\vec u,\vec v)=P(k_1(\vec u,\vec v))$ is PSD.
+
+\subproblem Show that the kernel $k$ defined by $k(\vec u,\vec v)=\exp(k_1(\vec u,\vec v))$ is PSD. (Hint: use the series expansion.)
+
+\begin{solution}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Please write down your answers in this environment.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\problem{Linear Regression}
+
+\subproblem\\
+\because $\epsilon\sim\mathcal N(0,\sigma^2)$,$y=\vec\theta^T\vec x+\epsilon$\\
+\therefore $y\sim\mathcal N(\vec\theta^T\vec x,\sigma^2)$\\
+From the Gaussian Density Function:\\
+$$p(y^{(i)}|\theta,x^{(i)},\epsilon)=\frac{1}{\sqrt{2\pi}\epsilon}e^{\frac{-(y^{(i)}-\vec\theta^T x^{(i)})^2}{2\epsilon ^2}}$$\\
+so $$p(y|\theta,X,\epsilon)=\prod_{i=1}^{n}\frac{1}{\sqrt{2\pi}\epsilon}e^{\frac{-(y^{(i)}-\vec\theta^T x^{(i)})^2}{2\epsilon ^2}} $$
+The log-likelihood function of $y$ is:\\
+$$l(\theta)=ln p(y|\theta,X,\epsilon)=\sum_{i=1}^{n}(ln\frac{1}{\sqrt{2\pi}\epsilon}-\frac{(y^{(i)}-\vec\theta^T x^{(i)})^2}{2\epsilon ^2})$$\\
+When we ignore the unnecessary constants, it changed into the form below:\\
+$$l(\theta)=\sum_{i=1}^{n}(-\frac{(y^{(i)}-\vec\theta^T x^{(i)})^2}{2\epsilon ^2})$$\\
+
+\subproblem\\
+When we want to find the Maximum Likelihood Estimate of $\theta$,\\
+we may find the minimum of $\sum_{i=1}{n}(y^(i)-\theta^Tx^(i))^2$\\
+That's to say, we have to find the minimum of $(y-\theta^TX)^T(y-\theta^TX$.\\
+So, finding Maximum Likelihood Estimate of $\vec\theta$ is equivalent to solving $\mathrm{argmin}_{\vec\theta}\; \norm{\vec y-\vec X\vec\theta}^2$.
+
+\subproblem\\
+Proof:\\
+For \forall $\vec a \in R^n$, we have
+$$\vec a^T(X^TX+\lambda I)\vec a=\Vert X \vec a \Vert^2+\lambda \Vert \vec a \Vert^2 > 0$$
+Therefore, $$X^TX+\lambda I$$is Positive Definite.
+
+\subproblem\\
+$\Vert y-X\theta \Vert ^2+\lambda \Vert \theta \Vert ^2$\\
+$=(y-X\theta)^T(y-X\theta)+\lambda \theta^T\theta$\\
+$=(y^T-\theta^TX^T)(y-X\theta)+\lambda\theta^T\theta$\\
+$=y^Ty-\theta^TX^Ty-y^TX\theta+\theta^TX^TX\theta+\lambda\theta^T\theta$\\
+When we let $$\frac{\partial f}{\partial \theta}=-X^Ty-X^Ty+(X^TX+X^TX)\theta+2\lambda I\theta=0$$
+we can get $$(\lambda I +X^TX)\theta=X^Ty$$
+We know that $\lambda I +X^TX$ is invertible, \\
+so $\Vert y-X\theta\Vert^2+\lambda\Vert\theta\Vert^2$ can reach its minimum when 
+$\theta^*=(X^TX+\lambdaI)^{-1}X^Ty$.\\
+That is, $\vec\theta^* = (\vec X^\T\vec X+\lambda\vec I)^{-1}\vec X^\T\vec y$ is the solution to $\mathrm{argmin}_{\vec\theta}\; \norm{\vec y-\vec X\vec\theta}^2+\lambda\norm{\vec\theta}^2$.
+
+\subproblem\\ 
+From the Bayes' formula, we have\\
+$$arg_\theta maxf(\theta|y)=\frac{f(y|\theta)f(\theta)}{f(y)}$$
+From the information given above,\\
+$$\epsilon\sim\mathcal N(0,\sigma^2)$$ $$\theta_i\sim\mathcal N(0,\tau^2)$$
+So we have:\\
+$$arg_\theta maxf(y|\theta)f(\theta)=\prod_{i-1}^{n}\frac{1}{\sqrt{2\pi}\sigma}e^{-\frac{(y^(i)-\theta^Tx^(i))^2}{2\sigma^2}}\frac{1}{\sqrt{2\pi}\gamma}e^{-\frac{\theta_i^2}{2\gamma^2}}$$
+We let $$\frac{\partial f}{\partial \theta}=\frac{X^TX\theta-X^Ty}{\sigma^2}+\frac{\theta}{\gamma^2}=0$$
+So $$\theta^*=(\gamma^2X^TX+\sigma^2)^{-1}\gamma^2X^Ty$$
+\vspace{20pt}
+
+\problem{Gradient Descent}
+
+\subproblem\\
+Proof:\\
+From $$|f'(x)-f'(y)|\le \beta|x-y|$$\\
+we have$$|\frac{f'(x)-f'(y)}{x-y}|\leq \beta$$\\
+So for $$\forall  x,y, \exists \xi \in (x,y),|f''(\xi)|\leq \beta$$.\\
+Therefore, $$f(y)=f(x)+f'(x)(y-x)+\frac{f''(\iota)}{2!}(y-x)^2\leqf(X)+f'(x)(y-x)+\frac{\beta}{2}(y-x)^2$$
+
+\subproblem\\
+Proof:\\
+From subproblem (1),
+$$f(x_{k+1})\leq f(x_k)+f'(x_k)(x_{k+1}-x_k)+\frac{\beta}{2}(x_{k+1}-x_k)^2$$
+Because $x_{k+1}=x_k-\eta f'(x_k)$ is one step of GD,\\
+so $$f(x_{k+1})\leq f(x_k)-\eta(f'(x_k))^2+\frac{\beta\eta^2}{2}(f'(x_k))^2=f(x_k)-\eta(1-\frac{\eta\beta}2)(f'(x_k))^2$$
+
+\subproblem\\
+Proof:\\
+According to subproblem (2), we let $\eta=\frac{1}{\beta}$\\
+then we have $$f(x_{k+1})\leq\\ f(x_k)-\frac{f'(x_k)^2}{2\beta}$$
+that is $$(f'(x_k)^2\leq 2\beta(f(x_k)-f(x_{k+1}))$$
+Therefore, we have $$\sum_{k=1}^{K}f'(x_k)^2\leq2\beta(f(x_k)-f(x_{k+1}))\leq 2\beta (f(x_!)-f(x^*))$$
+Finally we get $$\lim\limits_{k\to\infty}f'(x_k)=0$$
+$$\lim\limits_{k\to\infty}x_k=x^*$$
+
+
+\subproblem\\
+Proof:\\
+We let $z=y-\frac1\beta(f'(y)-f'(x))$\\
+so we have 
+$$f(z)-f(y)\leq f'(y)(z-y)$$
+$$f(z)-f(x)\leq f'(x)(z-x)$$
+then
+$$f(y)-f(x)\leq z(f'(x)-f'(y))-xf'(x)-yf'(y)$$
+$$f(y)-f(x)\leq (y-\frac{(f'(y)-f'(x))}{2\beta})(f'(x)-f'(y))-xf'(x)-yf'(y)$$
+Finally we get
+$$f(y)-f(x)\leqf'(x)(y-x)+\frac{1}{2\beta}(f'(x)-f'(y))^2$$
+\vspace{20pt}
+
+\problem{Kernel functions}
+
+\subproblem\\
+$$K_{ij}=k(u_i,u_j)=f(u_i)f(u_j)$$
+$K=(f(u_1)f(u_2)...f(u_p))^T(
+f(u_1)&f(u_2)&...&f(u_p)
+)$\\
+then we let
+$$w=\begin{pmatrix}
+f(u_1)&f(u_2)&...&f(u_p)
+\end{pmatrix}^T$$
+so$$K=ww^T$$
+For $$\forall x>0, x^TKx=x^Tww^Tx=\Vertw^Tx\Vert^2\leq 0$$
+so K is Positive Semi-Definite.\\
+Then $k(u,v)$ is Positive Semi-Definite.
+\subproblem\\
+$$K_{ij}=k(u_i,u_j)=k_1(u_i,u_j)\cdotk_2(u_i,u_j)$$
+We let $$A_{ij}=k_1(u_i,u_j)$$$$B_{ij}=k_2(u_i,u_j)$$\\
+so $K=A\circ B$.\\
+Because $k_1,k_2$ are Positive Semi-Definite,\\
+so we have $A\succeq 0,B\succeq0$\\
+That means all the eigenvalues of A and B are non-negative\\
+When $$A\succeq 0  B\succeq0$$ $$\lambda_{min}(A\circ B)\leq \lambda_{min}(A)\lambda_{min}(B)$$\\
+So $$\lambda_{min}(A\circ B)\leq 0$$\\
+$K=A\circ B $ is Positive Semi-Definite.\\
+Then $k(u,v)$ is Positive Semi-Definite.\\
+\subproblem\\
+$$K_{ij}=k(u_i,u_j)=P(k_1(u_i,u_j))=\sum_{t}^{}a_t(k_1(u_i,u_j))^t,a_t\geq 0$$
+We let $$A_{ij}=k_1(u_i,u_j)\ B_{ij}=(k_1(u_i,u_j))^T$$
+For $$K_{ij}=\sum_{t}^{}a_t(k_1(u_i,u_j))^T$$
+we have that $$B_t=A\circ A\circ ...\circ A(t times)&&
+and
+$$ K=\sum_{t}^{}(a_t)^pB_T$$
+Also for k1 is Positive Semi-Definite, we know that $$A\succcurlyeq 0$$, so $$A\circ A\circ ...\circ A(t\ times)\succcurlyeq 0$$
+so $$B_t\succcurlyeq 0$$
+For$$ a_t\geq 0$$
+$$B_t\succcurlyeq 0$$
+we have that$$ K=\sum_{t}^{}(a_t)^pB_T\succcurlyeq 0$$
+Namely,$$ k(u,v)$$ is Positive Semi-Definite.
+
+\subproblem\\
+For $$exp(x)=\sum_{i}^{}\frac{1}{i!}x^i $$and $$\frac{1}{i!}\geq 0$$
+we have that exp(x) is a particular case of P(x) in (3). 
+\\Also for $$k(u,v)=P(k,(u,v)) $$is Positive Semi-Definite,
+\\we have that $$k(u,v)=exp(k,(u,v)) $$is Positive Semi-Definite.
+
+\end{solution}
+
+\end{document}
+
